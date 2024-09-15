@@ -1,0 +1,139 @@
+pipeline {
+    agent any
+
+    stages {
+        // Stage 1: Build
+        stage('Build') {
+            steps {
+                echo 'Building the project...'
+                // Use Gradle to build the project
+                bat './gradlew build'
+            }
+        }
+
+        // Stage 2: Unit and Integration Tests
+        stage('Unit and Integration Tests') {
+            steps {
+                echo 'Running unit and integration tests...'
+                // Use Gradle to run tests
+                bat './gradlew test'
+            }
+            post {
+                success {
+                    script {
+                        try {
+                            emailext(
+                                to: 'jamesnardella7@gmail.com',
+                                subject: 'Unit and Integration Tests Status - SUCCESS',
+                                body: 'The unit and integration tests ran successfully.',
+                                attachLog: true
+                            )
+                            echo 'Email sent successfully after tests.'
+                        } catch (Exception e) {
+                            echo "Failed to send email: ${e.message}"
+                        }
+                    }
+                }
+                failure {
+                    script {
+                        try {
+                            emailext(
+                                to: 'jamesnardella7@gmail.com',
+                                subject: 'Unit and Integration Tests Status - FAILURE',
+                                body: 'The unit and integration tests failed. Please check the logs.',
+                                attachLog: true
+                            )
+                            echo 'Email sent successfully after failed tests.'
+                        } catch (Exception e) {
+                            echo "Failed to send email: ${e.message}"
+                        }
+                    }
+                }
+            }
+        }
+
+        // Stage 3: Code Analysis
+        stage('Code Analysis') {
+            steps {
+                echo 'Running code analysis...'
+                // Use SonarQube for code analysis
+                bat './gradlew sonarqube'
+            }
+        }
+
+        // Stage 4: Security Scan
+        stage('Security Scan') {
+            steps {
+                echo 'Performing security scan...'
+                // Use OWASP Dependency-Check for security scan
+                bat 'dependency-check.bat --project my-project --scan /path/to/code'
+            }
+            post {
+                success {
+                    script {
+                        try {
+                            emailext(
+                                to: 'jamesnardella7@gmail.com',
+                                subject: 'Security Scan Status - SUCCESS',
+                                body: 'The security scan completed successfully.',
+                                attachLog: true
+                            )
+                            echo 'Email sent successfully after security scan.'
+                        } catch (Exception e) {
+                            echo "Failed to send email: ${e.message}"
+                        }
+                    }
+                }
+                failure {
+                    script {
+                        try {
+                            emailext(
+                                to: 'jamesnardella7@gmail.com',
+                                subject: 'Security Scan Status - FAILURE',
+                                body: 'The security scan failed. Please check the logs.',
+                                attachLog: true
+                            )
+                            echo 'Email sent successfully after failed security scan.'
+                        } catch (Exception e) {
+                            echo "Failed to send email: ${e.message}"
+                        }
+                    }
+                }
+            }
+        }
+
+        // Stage 5: Deploy to Staging
+        stage('Deploy to Staging') {
+            steps {
+                echo 'Deploying to staging...'
+                // Use a deployment script or command
+                bat 'deploy_to_staging.bat'
+            }
+        }
+
+        // Stage 6: Integration Tests on Staging
+        stage('Integration Tests on Staging') {
+            steps {
+                echo 'Running integration tests on staging...'
+                // Use Gradle to run integration tests in staging
+                bat './gradlew check'
+            }
+        }
+
+        // Stage 7: Deploy to Production
+        stage('Deploy to Production') {
+            steps {
+                echo 'Deploying to production...'
+                // Use a deployment script or command
+                bat 'deploy_to_prod.bat'
+            }
+        }
+    }
+
+    // Notifications for the pipeline
+    post {
+        always {
+            echo 'Pipeline execution finished.'
+        }
+    }
+}
