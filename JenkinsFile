@@ -6,8 +6,8 @@ pipeline {
         stage('Build') {
             steps {
                 echo 'Building the project...'
-                // You can specify the build tool here (e.g., Maven, Gradle, etc.)
-                // Example for Maven: sh 'mvn clean package'
+                // Use Maven to build the project
+                sh 'mvn clean package'
             }
         }
 
@@ -15,8 +15,8 @@ pipeline {
         stage('Unit and Integration Tests') {
             steps {
                 echo 'Running unit and integration tests...'
-                // Specify the test tool here (e.g., JUnit, TestNG, etc.)
-                // Example for Maven: sh 'mvn test'
+                // Use Maven to run tests
+                sh 'mvn test'
             }
             post {
                 success {
@@ -56,7 +56,8 @@ pipeline {
         stage('Code Analysis') {
             steps {
                 echo 'Running code analysis...'
-                // Example: sh 'sonar-scanner' (You could use SonarQube)
+                // Use SonarQube for code analysis
+                sh 'mvn sonar:sonar'
             }
         }
 
@@ -64,7 +65,8 @@ pipeline {
         stage('Security Scan') {
             steps {
                 echo 'Performing security scan...'
-                // Example tool: OWASP Dependency-Check
+                // Use OWASP Dependency-Check for security scan
+                sh 'dependency-check.sh --project my-project --scan /path/to/code'
             }
             post {
                 success {
@@ -104,7 +106,8 @@ pipeline {
         stage('Deploy to Staging') {
             steps {
                 echo 'Deploying to staging...'
-                // Example: sh 'deploy_to_staging.sh' or use AWS CLI commands
+                // Use a deployment script or command
+                sh 'deploy_to_staging.sh'
             }
         }
 
@@ -112,7 +115,8 @@ pipeline {
         stage('Integration Tests on Staging') {
             steps {
                 echo 'Running integration tests on staging...'
-                // Similar to unit tests, but in staging environment
+                // Use Maven or another tool to run integration tests in staging
+                sh 'mvn verify'
             }
         }
 
@@ -120,7 +124,8 @@ pipeline {
         stage('Deploy to Production') {
             steps {
                 echo 'Deploying to production...'
-                // Example: sh 'deploy_to_prod.sh' or AWS CLI commands for production
+                // Use a deployment script or command
+                sh 'deploy_to_prod.sh'
             }
         }
     }
