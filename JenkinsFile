@@ -6,8 +6,8 @@ pipeline {
         stage('Build') {
             steps {
                 echo 'Building the project...'
-                // Use Maven to build the project
-                sh 'mvn clean package'
+                // Use Gradle to build the project
+                bat './gradlew build'
             }
         }
 
@@ -15,8 +15,8 @@ pipeline {
         stage('Unit and Integration Tests') {
             steps {
                 echo 'Running unit and integration tests...'
-                // Use Maven to run tests
-                sh 'mvn test'
+                // Use Gradle to run tests
+                bat './gradlew test'
             }
             post {
                 success {
@@ -57,7 +57,7 @@ pipeline {
             steps {
                 echo 'Running code analysis...'
                 // Use SonarQube for code analysis
-                sh 'mvn sonar:sonar'
+                bat './gradlew sonarqube'
             }
         }
 
@@ -66,7 +66,7 @@ pipeline {
             steps {
                 echo 'Performing security scan...'
                 // Use OWASP Dependency-Check for security scan
-                sh 'dependency-check.sh --project my-project --scan /path/to/code'
+                bat 'dependency-check.bat --project my-project --scan /path/to/code'
             }
             post {
                 success {
@@ -107,7 +107,7 @@ pipeline {
             steps {
                 echo 'Deploying to staging...'
                 // Use a deployment script or command
-                sh 'deploy_to_staging.sh'
+                bat 'deploy_to_staging.bat'
             }
         }
 
@@ -115,8 +115,8 @@ pipeline {
         stage('Integration Tests on Staging') {
             steps {
                 echo 'Running integration tests on staging...'
-                // Use Maven or another tool to run integration tests in staging
-                sh 'mvn verify'
+                // Use Gradle to run integration tests in staging
+                bat './gradlew check'
             }
         }
 
@@ -125,7 +125,7 @@ pipeline {
             steps {
                 echo 'Deploying to production...'
                 // Use a deployment script or command
-                sh 'deploy_to_prod.sh'
+                bat 'deploy_to_prod.bat'
             }
         }
     }
