@@ -122,10 +122,4 @@ pipeline {
             }
         }
     }
-    // Notifications for the pipeline
-    post {
-        always {
-            echo 'Pipeline execution finished.'
-        }
-    }
 }
